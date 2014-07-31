@@ -71,6 +71,7 @@ public class MainActivity extends Activity {
                public void onCompleted(Exception e, JsonObject result) {
                     if(e != null) {
                         Log.d("Articles", e.getMessage());
+                        return;
                     }
                     try {
                         JsonArray articles = result.getAsJsonArray("articles");
