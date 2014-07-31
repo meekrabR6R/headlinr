@@ -84,8 +84,8 @@ public class MainActivity extends Activity {
                         TextView summary = (TextView) findViewById(R.id.summary);
                         TextView metaData = (TextView) findViewById(R.id.metadata);
 
-                        headLine.setText(article.title);
-                        summary.setText(article.getSummary());
+                        headLine.setText(article.getUpperCaseTitle());
+                        summary.setText(article.getFormattedSummary());
                         metaData.setText(article.getMetaData());
 
                         final Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -110,7 +110,7 @@ public class MainActivity extends Activity {
             }
         });
     }
-    
+
     private int getRandomCategory() {
         return mCategories.get((new Random()).nextInt(mCategories.size()));
     }
@@ -124,7 +124,11 @@ public class MainActivity extends Activity {
         private String source, summary, title;
         String url;
 
-        public String getSummary() {
+        public String getUpperCaseTitle() {
+            return title.toUpperCase();
+        }
+
+        public String getFormattedSummary() {
             return summary.replace("\n", "").replace("\r", "");
         }
 
