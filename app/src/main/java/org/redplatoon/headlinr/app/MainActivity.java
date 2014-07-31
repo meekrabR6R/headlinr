@@ -130,7 +130,7 @@ public class MainActivity extends Activity {
         }
 
         public String getFormattedSummary() {
-            return summary.replace("\n", "").replace("\r", "");
+            return summary.replace("\n", " ").replace("\r", " ");
         }
 
         public void setMetaData(String description) {
