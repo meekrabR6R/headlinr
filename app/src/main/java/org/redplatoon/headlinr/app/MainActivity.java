@@ -51,18 +51,18 @@ public class MainActivity extends Activity {
                        mCategories.add(entry.getAsJsonObject().get("category_id").getAsInt());
                    }
 
-                   getRandomArticle();
+                   loadRandomArticle();
                    mButton.setOnClickListener(new View.OnClickListener() {
                        @Override
                        public void onClick(View v) {
-                           getRandomArticle();
+                           loadRandomArticle();
                        }
                    });
                }
            });
     }
 
-    private void getRandomArticle() {
+    private void loadRandomArticle() {
         Ion.with(this)
            .load(rootUrl + "categories/" + getRandomCategory() + "/articles.json")
            .asJsonObject()
