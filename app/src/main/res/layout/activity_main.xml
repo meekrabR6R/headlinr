@@ -1,9 +1,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/title"
+    android:background="@color/background"
     tools:context="org.redplatoon.headlinr.app.MainActivity">
     <TextView
         android:id="@+id/app_title"
@@ -12,49 +14,52 @@
         android:gravity="center_horizontal"
         android:padding="10dp"
         android:textSize="35sp"
-        android:background="@color/title"
         android:textColor="@color/text"
         android:text="@string/app_name"/>
-    <TextView
-        android:id="@+id/head_line"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:padding="3dp"
         android:layout_marginTop="20dp"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
-        android:textSize="16sp"
-        android:height="60dp"
-        android:background="@color/headline"
-        android:textColor="@color/text"
-        android:text="Title Placeholder"/>
-    <TextView
-        android:id="@+id/summary"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:padding="10dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:textSize="12sp"
-        android:ellipsize="end"
-        android:height="120dp"
-        android:background="@color/summary"
-        android:textColor="@color/text"
-        android:text="Title Placeholder"/>
-    <TextView
-        android:id="@+id/metadata"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:padding="10dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:textSize="10sp"
-        android:background="@color/metadata"
-        android:textColor="@color/text"
-        android:text="Metadata Placholder"/>
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/head_line"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="3"
+            android:gravity="center_horizontal"
+            android:padding="3dp"
+            android:textSize="16sp"
+            android:height="60dp"
+            android:background="@color/headline"
+            android:textColor="@color/text"
+            android:text="Title Placeholder"/>
+        <TextView
+            android:id="@+id/summary"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="4"
+            android:gravity="center_horizontal"
+            android:padding="10dp"
+            android:textSize="12sp"
+            android:ellipsize="end"
+            android:height="120dp"
+            android:background="@color/summary"
+            android:textColor="@color/text"
+            android:text="Title Placeholder"/>
+        <TextView
+            android:id="@+id/metadata"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:padding="10dp"
+            android:textSize="10sp"
+            android:background="@color/metadata"
+            android:textColor="@color/text"
+            android:text="Metadata Placholder"/>
+    </LinearLayout>
     <TextView
         android:id="@+id/button"
         android:text="@string/headline_button"
@@ -62,9 +67,18 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:gravity="center_horizontal"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="60dp"
         android:padding="20dp"
         android:textSize="30sp"
         android:background="@drawable/button"
         android:textColor="@color/text"/>
+
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/banner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        ads:adUnitId="ca-app-pub-4547237027989566/2292472935"
+        ads:adSize="BANNER"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center_horizontal"/>
 </LinearLayout>

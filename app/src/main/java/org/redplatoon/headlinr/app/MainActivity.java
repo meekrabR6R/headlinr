@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -24,7 +26,10 @@ public class MainActivity extends Activity {
     private final ArrayList<Integer> mCategories = new ArrayList<Integer>();
     private String rootUrl;
     private TextView mButton;
-
+    /** The view to show the ad. */
+    private AdView mAdView;
+    /* Your ad unit id. Replace with your actual ad unit id. */
+    private static final String AD_UNIT_ID = "ca-app-pub-4547237027989566/2292472935";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +39,35 @@ public class MainActivity extends Activity {
         rootUrl = getString(R.string.root_url);
         mButton = (TextView) findViewById(R.id.button);
         setUpCategories();
+
+        mAdView = (AdView) findViewById(R.id.banner);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mAdView != null) {
+            mAdView.resume();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        if (mAdView != null) {
+            mAdView.pause();
+        }
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        // Destroy the AdView.
+        if (mAdView != null) {
+            mAdView.destroy();
+        }
+        super.onDestroy();
     }
 
     private void setUpCategories() {
@@ -44,7 +78,7 @@ public class MainActivity extends Activity {
                @Override
                public void onCompleted(Exception e, JsonArray result) {
                    if(e != null) {
-                       Log.d("Categories", e.getMessage());
+                       //Log.d("Categories", e.getMessage());
                        return;
                    }
                    for(JsonElement entry : result) {
@@ -70,7 +104,7 @@ public class MainActivity extends Activity {
                @Override
                public void onCompleted(Exception e, JsonObject result) {
                     if(e != null) {
-                        Log.d("Articles", e.getMessage());
+                        //Log.d("Articles", e.getMessage());
                         return;
                     }
                     try {
