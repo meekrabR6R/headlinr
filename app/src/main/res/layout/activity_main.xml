@@ -10,7 +10,8 @@
     <TextView
         android:id="@+id/app_title"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:gravity="center_horizontal"
         android:padding="10dp"
         android:textSize="35sp"
@@ -18,7 +19,8 @@
         android:text="@string/app_name"/>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="5"
         android:layout_marginTop="20dp"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
@@ -27,11 +29,12 @@
             android:id="@+id/head_line"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="3"
+            android:layout_weight="2"
+            android:ellipsize="end"
+            android:maxLines="4"
             android:gravity="center_horizontal"
             android:padding="3dp"
             android:textSize="16sp"
-            android:height="60dp"
             android:background="@color/headline"
             android:textColor="@color/text"
             android:text="Title Placeholder"/>
@@ -40,11 +43,10 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="4"
-            android:gravity="center_horizontal"
             android:padding="10dp"
             android:textSize="12sp"
             android:ellipsize="end"
-            android:height="120dp"
+            android:maxLines="10"
             android:background="@color/summary"
             android:textColor="@color/text"
             android:text="Title Placeholder"/>
@@ -67,7 +69,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:gravity="center_horizontal"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="40dp"
         android:padding="20dp"
         android:textSize="30sp"
         android:background="@drawable/button"
@@ -79,6 +81,7 @@
         android:layout_height="wrap_content"
         ads:adUnitId="ca-app-pub-4547237027989566/2292472935"
         ads:adSize="BANNER"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="10dp"
         android:layout_gravity="center_horizontal"/>
 </LinearLayout>

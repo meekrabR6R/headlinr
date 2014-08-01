@@ -160,7 +160,7 @@ public class MainActivity extends Activity {
         String url;
 
         public String getUpperCaseTitle() {
-            return title.toUpperCase();
+            return title.toUpperCase().split("\\(")[0];
         }
 
         public String getFormattedSummary() {
