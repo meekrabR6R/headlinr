@@ -2,6 +2,7 @@ package org.redplatoon.headlinr.app;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -116,6 +117,7 @@ public class MainActivity extends Activity {
                         article.setMetaData(description);
 
                         TextView headLine = (TextView) findViewById(R.id.head_line);
+                        headLine.setTypeface(null, Typeface.BOLD);
                         TextView summary = (TextView) findViewById(R.id.summary);
                         TextView metaData = (TextView) findViewById(R.id.metadata);
 
