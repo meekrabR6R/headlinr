@@ -44,6 +44,7 @@ public class MainActivity extends Activity {
     private TextView mMetaData;
     private AdView mAdView;
     private ProgressBar mProgressBar;
+    private Article mArticle;
 
     private static final String AD_UNIT_ID = "ca-app-pub-4547237027989566/2292472935";
 
@@ -53,6 +54,19 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         getActionBar().hide();
         Ion.getDefault(this).configure().setLogging("Headlinr", Log.DEBUG);
+
+        if(savedInstanceState != null) {
+            mArticle = new Article();
+
+            String link = savedInstanceState.getString("link");
+            String title = savedInstanceState.getString("title");
+            String type = savedInstanceState.getString("type");
+            String description = savedInstanceState.getString("description");
+            String source = savedInstanceState.getString("source");
+            String pubDate = savedInstanceState.getString("pubDate");
+
+            mArticle.setProperties(source, title, link, description, pubDate);
+        }
 
         rootUrl = getString(R.string.root_url);
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
@@ -86,6 +100,18 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if (mArticle != null) {
+
+            outState.putString("link", mArticle.getLink());
+            outState.putString("title", mArticle.getTitle().toString());
+            outState.putString("type", mArticle.getType());
+            outState.putString("description", mArticle.getDescription().toString());
+            outState.putString("source", mArticle.source);
+            outState.putString("pubDate", mArticle.pubDate);
+        }
+    }
+    @Override
     public void onDestroy() {
         // Destroy the AdView.
         if (mAdView != null) {
@@ -102,7 +128,6 @@ public class MainActivity extends Activity {
                @Override
                public void onCompleted(Exception e, JsonArray result) {
                    if(e != null) {
-                       //Log.d("Categories", e.getMessage());
                        return;
                    }
                    for(JsonElement entry : result) {
@@ -113,6 +138,7 @@ public class MainActivity extends Activity {
                    mButton.setOnClickListener(new View.OnClickListener() {
                        @Override
                        public void onClick(View v) {
+                           mButton.setClickable(false);
                            loadRandomArticle();
                        }
                    });
@@ -131,7 +157,7 @@ public class MainActivity extends Activity {
            .setCallback(new FutureCallback<JsonObject>() {
                @Override
                public void onCompleted(Exception e, JsonObject result) {
-                    if(e != null) {
+                   if(e != null) {
                         Log.d("Articles", "Oops..");
                         return;
                     }
@@ -139,12 +165,8 @@ public class MainActivity extends Activity {
                         JsonArray sources = result.getAsJsonArray("articles");
                         String description = result.getAsJsonPrimitive("description").getAsString();
                         JsonObject singleSource = sources.get(new Random().nextInt(sources.size())).getAsJsonObject();
-
                         String sourceUrl = singleSource.get("source_url").getAsString();
-                        Log.d("SOURCEURL", sourceUrl);
 
-                        //Article article = new Gson().fromJson(singleArticle, Article.class);
-                        //article.setMetaData(description);
                         new RSSFeedTask().execute(sourceUrl, description, singleSource.get("source").getAsString());
 
                     } catch(JsonParseException error) {
@@ -175,6 +197,7 @@ public class MainActivity extends Activity {
             Thread.currentThread().setContextClassLoader(article.getClass().getClassLoader());
             try {
                 RSSFeed feed = reader.load(strings[0]);
+
                 List<RSSItem> items = feed.getItems();
                 RSSItem item;
 
@@ -203,6 +226,7 @@ public class MainActivity extends Activity {
         }
 
         protected void onPostExecute(Article article) {
+            mArticle = article;
             if(article.getTitle() == null) {
                 loadRandomArticle();
             } else {
@@ -211,6 +235,7 @@ public class MainActivity extends Activity {
                 mSummary.setVisibility(View.VISIBLE);
                 mMetaData.setVisibility(View.VISIBLE);
                 mHeadLine.setText(article.getUpperCaseTitle());
+
                 mSummary.setText(article.getDescription());
                 mMetaData.setText(article.getMetaData());
 
@@ -220,6 +245,7 @@ public class MainActivity extends Activity {
                 setClick(mSummary, intent);
                 setClick(mMetaData, intent);
 
+                mButton.setClickable(true);
             }
         }
     }
@@ -251,7 +277,16 @@ public class MainActivity extends Activity {
         }
 
         public Spanned getDescription() {
-            return removeImageSpanObjects(description.trim());
+            String localDesc;
+            if(description != null)
+                localDesc = description.trim();
+            else
+                localDesc = "No summary";
+            return removeImageSpanObjects(localDesc);
+        }
+
+        public String getType() {
+            return type;
         }
 
         public void setMetaData(String description) {
@@ -259,7 +294,7 @@ public class MainActivity extends Activity {
         }
 
         public String getMetaData() {
-            return type + " / " + source + " / " + pubDate;
+            return type + " / " + source + "\n" + pubDate;
         }
 
         private Spanned removeImageSpanObjects(String inStr) {
