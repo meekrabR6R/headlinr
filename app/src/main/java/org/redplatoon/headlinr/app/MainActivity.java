@@ -176,7 +176,17 @@ public class MainActivity extends Activity {
             try {
                 RSSFeed feed = reader.load(strings[0]);
                 List<RSSItem> items = feed.getItems();
-                RSSItem item = items.get(new Random().nextInt(2));
+                RSSItem item;
+
+                if(items.size() >= 3)
+                    item = items.get(new Random().nextInt(2));
+                else if(items.size() >= 2)
+                    item = items.get(new Random().nextInt(1));
+                else if(items.size() == 0)
+                    item = items.get(new Random().nextInt(0));
+                else
+                    return article;
+
                 article.setProperties(strings[2], item.getTitle(), item.getLink().toString(),
                         item.getDescription(), item.getPubDate().toString());
 
