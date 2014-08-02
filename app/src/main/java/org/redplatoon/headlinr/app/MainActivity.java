@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -180,7 +181,14 @@ public class MainActivity extends Activity {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(intent);
+               try {
+                   startActivity(intent);
+               } catch(Exception e) {
+                   Log.d("URL", "Possibly malformed");
+                   Toast.makeText(MainActivity.this, "The link appears to be broken. :(", Toast.LENGTH_LONG).show();
+                   intent.setData(Uri.parse("http://"+intent.getData().toString()));
+                   startActivity(intent);
+               }
             }
         });
     }
@@ -215,19 +223,23 @@ public class MainActivity extends Activity {
 
             } catch(RSSReaderException e) {
                 Log.d("RSS", e.getMessage());
+                article.setIsInvalid(true);
             } catch(RSSFault e) {
                 Log.d("RSS", e.getMessage());
+                article.setIsInvalid(true);
             } catch(NullPointerException e) {
                 Log.d("NullPointerException", "Stuff happened");
+                article.setIsInvalid(true);
             } catch(IllegalArgumentException e) {
                 Log.d("RSSFEED", "Feed is apparently 0 length");
+                article.setIsInvalid(true);
             }
             return article;
         }
 
         protected void onPostExecute(Article article) {
             mArticle = article;
-            if(article.getTitle() == null) {
+            if(article.isInvalid()) {
                 loadRandomArticle();
             } else {
                 mProgressBar.setVisibility(View.GONE);
@@ -252,6 +264,25 @@ public class MainActivity extends Activity {
 
     private class Article {
         private String type, source, title, link, description, pubDate;
+        private boolean isInvalid;
+
+        public Article() {
+            this.isInvalid = false;
+            this.type = "";
+            this.source = "";
+            this.title = "No title";
+            this.link = "";
+            this.description = "No summary";
+            this.pubDate = "";
+        }
+
+        public void setIsInvalid(boolean isInvalid) {
+            this.isInvalid = isInvalid;
+        }
+
+        public boolean isInvalid() {
+            return isInvalid;
+        }
 
         public void setProperties(String source, String title, String link, String description, String pubDate) {
             this.source = source;
@@ -273,6 +304,8 @@ public class MainActivity extends Activity {
         }
 
         public String getLink() {
+            if(link != null)
+                link = link.trim();
             return link;
         }
 
