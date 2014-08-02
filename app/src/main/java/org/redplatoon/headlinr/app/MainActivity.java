@@ -44,6 +44,7 @@ public class MainActivity extends Activity {
     private TextView mSummary;
     private TextView mMetaData;
     private AdView mAdView;
+    private TextView mFeedZilla;
     private ProgressBar mProgressBar;
     private Article mArticle;
 
@@ -70,6 +71,12 @@ public class MainActivity extends Activity {
         }
 
         rootUrl = getString(R.string.root_url);
+
+        mFeedZilla = (TextView) findViewById(R.id.feedzilla);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(getString(R.string.feedzilla_url)));
+        setClick(mFeedZilla, intent);
+
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mButton = (TextView) findViewById(R.id.button);
         mHeadLine = (TextView) findViewById(R.id.head_line);
@@ -186,7 +193,7 @@ public class MainActivity extends Activity {
                } catch(Exception e) {
                    Log.d("URL", "Possibly malformed");
                    Toast.makeText(MainActivity.this, "The link appears to be broken. :(", Toast.LENGTH_LONG).show();
-                   intent.setData(Uri.parse("http://"+intent.getData().toString()));
+                   intent.setData(Uri.parse("http://" + intent.getData().toString()));
                    startActivity(intent);
                }
             }

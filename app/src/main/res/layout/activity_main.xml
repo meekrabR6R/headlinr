@@ -92,6 +92,14 @@
         ads:adUnitId="ca-app-pub-4547237027989566/2292472935"
         ads:adSize="BANNER"
         android:layout_marginTop="15dp"
-        android:layout_marginBottom="10dp"
         android:layout_gravity="center_horizontal"/>
+    <TextView
+        android:id="@+id/feedzilla"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="Powered by Feedzilla"
+        android:textSize="6sp"
+        android:layout_margin="1dp"
+        android:textColor="@color/text"/>
 </LinearLayout>
