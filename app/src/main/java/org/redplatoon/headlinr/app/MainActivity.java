@@ -1,13 +1,13 @@
 package org.redplatoon.headlinr.app;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,7 +31,6 @@ import org.redplatoon.headlinr.app.models.Article;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
 
 public class MainActivity extends Activity {
     private final ArrayList<Integer> mCategories = new ArrayList<Integer>();
@@ -70,9 +69,9 @@ public class MainActivity extends Activity {
         rootUrl = getString(R.string.root_url);
 
         mFeedZilla = (TextView) findViewById(R.id.feedzilla);
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse(getString(R.string.feedzilla_url)));
-        setClick(mFeedZilla, intent);
+        //Intent intent = new Intent(Intent.ACTION_VIEW);
+        //intent.setData(Uri.parse(getString(R.string.feedzilla_url)));
+        setClick(mFeedZilla, getString(R.string.feedzilla_url));
 
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mButton = (TextView) findViewById(R.id.button);
@@ -116,9 +115,9 @@ public class MainActivity extends Activity {
             outState.putString("pubDate", mArticle.getPubDate());
         }
     }
+
     @Override
     public void onDestroy() {
-        // Destroy the AdView.
         if (mAdView != null) {
             mAdView.destroy();
         }
@@ -181,17 +180,36 @@ public class MainActivity extends Activity {
            });
     }
 
-    private void setClick(View view, final Intent intent) {
+    private void setClick(View view, final String url) {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                try {
-                   startActivity(intent);
+                   setContentView(R.layout.article);
+
+                   final WebView webView = (WebView) findViewById(R.id.article);
+                   webView.setBackgroundColor(getResources().getColor(R.color.background));
+                   webView.getSettings().setJavaScriptEnabled(true);
+
+                   final ProgressBar progress = (ProgressBar) findViewById(R.id.progress_bar);
+                   final int webViewBackground = getResources().getColor(R.color.text);
+
+                   webView.setWebViewClient(new WebViewClient() {
+                        @Override
+                        public void onPageFinished(WebView view, String url) {
+                            view.setBackgroundColor(webViewBackground);
+                            progress.setVisibility(View.GONE);
+                        }
+                   });
+                   webView.loadUrl(url);
+
+                   webView.setVisibility(View.VISIBLE);
+                   webView.setBackgroundColor(getResources().getColor(R.color.text));
                } catch(Exception e) {
                    Log.d("URL", "Possibly malformed");
                    Toast.makeText(MainActivity.this, "The link appears to be broken. :(", Toast.LENGTH_LONG).show();
-                   intent.setData(Uri.parse("http://" + intent.getData().toString()));
-                   startActivity(intent);
+                   //intent.setData(Uri.parse("http://" + intent.getData().toString()));
+                   //startActivity(intent);
                }
             }
         });
@@ -256,11 +274,12 @@ public class MainActivity extends Activity {
                 mSummary.setText(article.getDescription());
                 mMetaData.setText(article.getMetaData());
 
-                final Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(article.getLink()));
-                setClick(mHeadLine, intent);
-                setClick(mSummary, intent);
-                setClick(mMetaData, intent);
+                //final Intent intent = new Intent(Intent.ACTION_VIEW);
+                //intent.setData(Uri.parse(article.getLink()));
+                String url = article.getLink();
+                setClick(mHeadLine, url);
+                setClick(mSummary, url);
+                setClick(mMetaData, url);
 
                 mButton.setClickable(true);
             }
