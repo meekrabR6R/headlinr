@@ -1,17 +1,16 @@
 package org.redplatoon.headlinr.app;
 
 import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import android.app.FragmentManager;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.gson.JsonArray;
@@ -32,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements ArticleFragment.OnArticleFragmentInteractionListener {
     private final ArrayList<Integer> mCategories = new ArrayList<Integer>();
     private String rootUrl;
     private TextView mButton;
@@ -124,6 +123,14 @@ public class MainActivity extends Activity {
         super.onDestroy();
     }
 
+    @Override
+    public void onArticleFragmentBackInteraction() {
+        getFragmentManager().popBackStack("article_fragment", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        mButton.setVisibility(View.VISIBLE);
+        mAdView.setVisibility(View.VISIBLE);
+        mFeedZilla.setVisibility(View.VISIBLE);
+    }
+
     private void setUpCategories() {
         Ion.with(this)
            .load(rootUrl + "categories.json")
@@ -156,12 +163,12 @@ public class MainActivity extends Activity {
         mMetaData.setVisibility(View.GONE);
         mProgressBar.setVisibility(View.VISIBLE);
         Ion.with(this)
-           .load(rootUrl + "categories/" + getRandomCategory() + "/articles.json")
-           .asJsonObject()
-           .setCallback(new FutureCallback<JsonObject>() {
-               @Override
-               public void onCompleted(Exception e, JsonObject result) {
-                   if(e != null) {
+            .load(rootUrl + "categories/" + getRandomCategory() + "/articles.json")
+            .asJsonObject()
+            .setCallback(new FutureCallback<JsonObject>() {
+                @Override
+                public void onCompleted(Exception e, JsonObject result) {
+                    if (e != null) {
                         Log.d("Articles", "Oops..");
                         return;
                     }
@@ -173,44 +180,34 @@ public class MainActivity extends Activity {
 
                         new RSSFeedTask().execute(sourceUrl, description, singleSource.get("source").getAsString());
 
-                    } catch(JsonParseException error) {
+                    } catch (JsonParseException error) {
                         Log.d("ParseError", error.getMessage());
                     }
-               }
-           });
+                }
+            });
     }
 
     private void setClick(View view, final String url) {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               try {
-                   setContentView(R.layout.article);
+                try {
+                    //setContentView(R.layout.article);
+                    mButton.setVisibility(View.GONE);
+                    mAdView.setVisibility(View.GONE);
+                    mFeedZilla.setVisibility(View.GONE);
 
-                   final WebView webView = (WebView) findViewById(R.id.article);
-                   webView.setBackgroundColor(getResources().getColor(R.color.background));
-                   webView.getSettings().setJavaScriptEnabled(true);
-
-                   final ProgressBar progress = (ProgressBar) findViewById(R.id.progress_bar);
-                   final int webViewBackground = getResources().getColor(R.color.text);
-
-                   webView.setWebViewClient(new WebViewClient() {
-                        @Override
-                        public void onPageFinished(WebView view, String url) {
-                            view.setBackgroundColor(webViewBackground);
-                            progress.setVisibility(View.GONE);
-                        }
-                   });
-                   webView.loadUrl(url);
-
-                   webView.setVisibility(View.VISIBLE);
-                   webView.setBackgroundColor(getResources().getColor(R.color.text));
-               } catch(Exception e) {
-                   Log.d("URL", "Possibly malformed");
-                   Toast.makeText(MainActivity.this, "The link appears to be broken. :(", Toast.LENGTH_LONG).show();
-                   //intent.setData(Uri.parse("http://" + intent.getData().toString()));
-                   //startActivity(intent);
-               }
+                    ArticleFragment articleFragment = ArticleFragment.newInstance(url);
+                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                    transaction.addToBackStack("article_fragment");
+                    transaction.replace(R.id.main_view, articleFragment);
+                    transaction.commit();
+                } catch(Exception e) {
+                    Log.d("URL", "Possibly malformed");
+                    Toast.makeText(MainActivity.this, "The link appears to be broken. :(", Toast.LENGTH_LONG).show();
+                    //intent.setData(Uri.parse("http://" + intent.getData().toString()));
+                    //startActivity(intent);
+                }
             }
         });
     }
