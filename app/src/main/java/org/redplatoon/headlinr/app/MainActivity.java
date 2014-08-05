@@ -6,10 +6,6 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.Html;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -30,6 +26,7 @@ import org.mcsoxford.rss.RSSFeed;
 import org.mcsoxford.rss.RSSItem;
 import org.mcsoxford.rss.RSSReader;
 import org.mcsoxford.rss.RSSReaderException;
+import org.redplatoon.headlinr.app.models.Article;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,8 +112,8 @@ public class MainActivity extends Activity {
             outState.putString("title", mArticle.getTitle().toString());
             outState.putString("type", mArticle.getType());
             outState.putString("description", mArticle.getDescription().toString());
-            outState.putString("source", mArticle.source);
-            outState.putString("pubDate", mArticle.pubDate);
+            outState.putString("source", mArticle.getSource());
+            outState.putString("pubDate", mArticle.getPubDate());
         }
     }
     @Override
@@ -222,9 +219,10 @@ public class MainActivity extends Activity {
                     item = items.get(new Random().nextInt(1));
                 else if(items.size() == 0)
                     item = items.get(new Random().nextInt(0));
-                else
+                else {
+                    article.setIsInvalid(true);
                     return article;
-
+                }
                 article.setProperties(strings[2], item.getTitle(), item.getLink().toString(),
                         item.getDescription(), item.getPubDate().toString());
 
@@ -268,89 +266,4 @@ public class MainActivity extends Activity {
             }
         }
     }
-
-    private class Article {
-        private String type, source, title, link, description, pubDate;
-        private boolean isInvalid;
-
-        public Article() {
-            this.isInvalid = false;
-            this.type = "";
-            this.source = "";
-            this.title = "No title";
-            this.link = "";
-            this.description = "No summary";
-            this.pubDate = "";
-        }
-
-        public void setIsInvalid(boolean isInvalid) {
-            this.isInvalid = isInvalid;
-        }
-
-        public boolean isInvalid() {
-            return isInvalid;
-        }
-
-        public void setProperties(String source, String title, String link, String description, String pubDate) {
-            this.source = source;
-            this.title = title;
-            this.link = link;
-            this.description = description;
-            this.pubDate = pubDate;
-        }
-
-        public Spanned getTitle() {
-            if(title != null)
-                return Html.fromHtml(title);
-            else
-                return null;
-        }
-
-        public String getUpperCaseTitle() {
-            return title.toUpperCase();
-        }
-
-        public String getLink() {
-            if(link != null)
-                link = link.trim();
-            return link;
-        }
-
-        public Spanned getDescription() {
-            String localDesc;
-            if(description != null)
-                localDesc = description.trim();
-            else
-                localDesc = "No summary";
-            return removeImageSpanObjects(localDesc);
-        }
-
-        public String getType() {
-            return type;
-        }
-
-        public void setMetaData(String description) {
-            this.type = description;
-        }
-
-        public String getMetaData() {
-            return type + " / " + source + "\n" + pubDate;
-        }
-
-        private Spanned removeImageSpanObjects(String inStr) {
-            SpannableStringBuilder spannedStr = (SpannableStringBuilder) Html
-                    .fromHtml(inStr.trim());
-            Object[] spannedObjects = spannedStr.getSpans(0, spannedStr.length(),
-                    Object.class);
-            for (int i = 0; i < spannedObjects.length; i++) {
-                if (spannedObjects[i] instanceof ImageSpan) {
-                    ImageSpan imageSpan = (ImageSpan) spannedObjects[i];
-                    spannedStr.replace(spannedStr.getSpanStart(imageSpan),
-                            spannedStr.getSpanEnd(imageSpan), "");
-                }
-            }
-            return spannedStr;
-        }
-    }
-
 }
