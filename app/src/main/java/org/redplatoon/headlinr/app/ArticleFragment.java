@@ -1,12 +1,14 @@
 package org.redplatoon.headlinr.app;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
@@ -34,6 +36,7 @@ public class ArticleFragment extends Fragment {
     private String mUrl;
     private OnArticleFragmentInteractionListener mListener;
     private ImageView mBack;
+    private ImageView mShare;
     private LinearLayout mCustomActionBar;
     private int mScrollPosition = 0;
     private boolean mIsCustomActionBarVisible = true;
@@ -94,11 +97,23 @@ public class ArticleFragment extends Fragment {
         webView.setBackgroundColor(getResources().getColor(R.color.text));
 
         mBack = (ImageView) rootView.findViewById(R.id.back);
+        mShare = (ImageView) rootView.findViewById(R.id.share);
 
         mBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onButtonPressed();
+            }
+        });
+
+        mShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Dialog dialog = new Dialog(getActivity());
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(R.layout.share);
+
+                dialog.show();
             }
         });
         return rootView;
