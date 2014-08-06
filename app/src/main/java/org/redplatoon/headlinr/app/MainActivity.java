@@ -149,7 +149,9 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
                        return;
                    }
                    for(JsonElement entry : result) {
-                       mCategories.add(entry.getAsJsonObject().get("category_id").getAsInt());
+                        int categoryId = entry.getAsJsonObject().get("category_id").getAsInt();
+                        if(categoryId != 18)
+                            mCategories.add(entry.getAsJsonObject().get("category_id").getAsInt());
                    }
 
                    loadRandomArticle();
