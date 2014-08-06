@@ -1,6 +1,7 @@
 package org.redplatoon.headlinr.app;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -10,7 +11,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.app.FragmentManager;
+
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.gson.JsonArray;
