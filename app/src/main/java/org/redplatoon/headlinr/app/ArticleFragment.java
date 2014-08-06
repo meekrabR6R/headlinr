@@ -4,13 +4,19 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+
+import org.redplatoon.headlinr.app.custom.ArticleWebView;
+
+import it.sephiroth.android.library.easing.EasingManager;
+import it.sephiroth.android.library.easing.Sine;
 
 
 /**
@@ -28,6 +34,11 @@ public class ArticleFragment extends Fragment {
     private String mUrl;
     private OnArticleFragmentInteractionListener mListener;
     private ImageView mBack;
+    private LinearLayout mCustomActionBar;
+    private int mScrollPosition = 0;
+    private boolean mIsCustomActionBarVisible = true;
+    private boolean mIsListeningToScroll = true;
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -56,7 +67,10 @@ public class ArticleFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.article, container, false);
-        final WebView webView = (WebView) rootView.findViewById(R.id.article);
+
+        mCustomActionBar = (LinearLayout) rootView.findViewById(R.id.share_bar);
+
+        final ArticleWebView webView = (ArticleWebView) rootView.findViewById(R.id.article);
         webView.setBackgroundColor(getResources().getColor(R.color.background));
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setUseWideViewPort(true);
@@ -72,12 +86,15 @@ public class ArticleFragment extends Fragment {
                 progress.setVisibility(View.GONE);
             }
         });
-        webView.loadUrl(mUrl);
 
+        webView.setOnTouchListener(new ArticleTouchListener());
+
+        webView.loadUrl(mUrl);
         webView.setVisibility(View.VISIBLE);
         webView.setBackgroundColor(getResources().getColor(R.color.text));
 
         mBack = (ImageView) rootView.findViewById(R.id.back);
+
         mBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,7 +104,6 @@ public class ArticleFragment extends Fragment {
         return rootView;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed() {
         if (mListener != null) {
             mListener.onArticleFragmentBackInteraction();
@@ -109,6 +125,77 @@ public class ArticleFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    /**
+     * Custom OnTouchListener for article touch
+     */
+    private class ArticleTouchListener implements View.OnTouchListener {
+        private float lastY;
+        private float diff;
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                lastY = event.getY();
+                return false;
+            }
+
+            if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                diff = (event.getY() - lastY);
+
+                if ((diff > 200  || diff < -200) && mIsListeningToScroll) {
+                    EasingManager manager = new EasingManager(new EasingManager.EasingCallback() {
+
+                        @Override
+                        public void onEasingValueChanged(double value, double oldValue) {
+                            mCustomActionBar.setTranslationY(-(float) value);
+                        }
+
+                        @Override
+                        public void onEasingStarted(double value) {
+                            mIsListeningToScroll = false;
+                            if (diff < -200) {
+                                mCustomActionBar.setTranslationY(-1000.0f);
+                            } else {
+                                mCustomActionBar.setTranslationY(0.0f);
+                            }
+
+                        }
+
+                        @Override
+                        public void onEasingFinished(double value) {
+                            if (diff < -200) {
+                                mCustomActionBar.setTranslationY(-1000.0f);
+                                mIsCustomActionBarVisible = false;
+                            } else {
+                                mCustomActionBar.setTranslationY(0.0f);
+                                mIsCustomActionBarVisible = true;
+                            }
+
+                            mIsListeningToScroll = true;
+                        }
+                    });
+
+                    // start the easing from 0 to 100
+                    // using Cubic easeOut
+                    // and a duration of 500ms
+                    if (mIsCustomActionBarVisible)
+                        manager.start(Sine.class, EasingManager.EaseType.EaseOut, 0, 1000, 250);
+                    else
+                        manager.start(Sine.class, EasingManager.EaseType.EaseIn, 1000, 0, 250);
+                }
+
+                return false;
+            }
+
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+
+            }
+
+           return false;
+        }
     }
 
     /**

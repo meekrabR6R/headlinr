@@ -23,6 +23,7 @@ dependencies {
     compile 'com.android.support:support-v4:20.0.0'
     compile 'com.google.android.gms:play-services:5.0.77'
     compile 'com.koushikdutta.ion:ion:+'
+    compile 'it.sephiroth.android.library.easing:android-easing:+'
     androidTestCompile files('libs/espresso-contrib-1.1-bundled.jar')
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }

@@ -132,6 +132,7 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
     }
 
     private void setUpCategories() {
+        mProgressBar.setVisibility(View.VISIBLE);
         Ion.with(this)
            .load(rootUrl + "categories.json")
            .asJsonArray()
@@ -193,15 +194,15 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
             public void onClick(View v) {
                 try {
                     //setContentView(R.layout.article);
-                    mButton.setVisibility(View.GONE);
-                    mAdView.setVisibility(View.GONE);
-                    mFeedZilla.setVisibility(View.GONE);
 
                     ArticleFragment articleFragment = ArticleFragment.newInstance(url);
                     FragmentTransaction transaction = getFragmentManager().beginTransaction();
                     transaction.addToBackStack("article_fragment");
                     transaction.replace(R.id.main_view, articleFragment);
                     transaction.commit();
+                    mButton.setVisibility(View.GONE);
+                    mAdView.setVisibility(View.GONE);
+                    mFeedZilla.setVisibility(View.GONE);
                 } catch(Exception e) {
                     Log.d("URL", "Possibly malformed");
                     Toast.makeText(MainActivity.this, "The link appears to be broken. :(", Toast.LENGTH_LONG).show();
