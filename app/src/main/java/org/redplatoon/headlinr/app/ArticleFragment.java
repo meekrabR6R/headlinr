@@ -18,8 +18,8 @@ import android.widget.TextView;
 
 import org.redplatoon.headlinr.app.custom.ArticleWebView;
 
+import it.sephiroth.android.library.easing.Bounce;
 import it.sephiroth.android.library.easing.EasingManager;
-import it.sephiroth.android.library.easing.Sine;
 
 
 /**
@@ -173,24 +173,25 @@ public class ArticleFragment extends Fragment {
 
                         @Override
                         public void onEasingValueChanged(double value, double oldValue) {
-                            mCustomActionBar.setTranslationY(-(float) value);
+                            if((diff < -200 && mIsCustomActionBarVisible) || (diff > 200 && !mIsCustomActionBarVisible))
+                                mCustomActionBar.setTranslationY(-(float) value);
                         }
 
                         @Override
                         public void onEasingStarted(double value) {
                             mIsListeningToScroll = false;
-                            if (diff < -200) {
-                                mCustomActionBar.setTranslationY(-1000.0f);
-                            } else {
-                                mCustomActionBar.setTranslationY(0.0f);
-                            }
+                            //if (diff < -200) {
+                            //    mCustomActionBar.setTranslationY(-100.0f);
+                            //} else {
+                            //    mCustomActionBar.setTranslationY(0.0f);
+                            //}
 
                         }
 
                         @Override
                         public void onEasingFinished(double value) {
                             if (diff < -200) {
-                                mCustomActionBar.setTranslationY(-1000.0f);
+                                mCustomActionBar.setTranslationY(-100.0f);
                                 mIsCustomActionBarVisible = false;
                             } else {
                                 mCustomActionBar.setTranslationY(0.0f);
@@ -205,9 +206,9 @@ public class ArticleFragment extends Fragment {
                     // using Cubic easeOut
                     // and a duration of 500ms
                     if (mIsCustomActionBarVisible)
-                        manager.start(Sine.class, EasingManager.EaseType.EaseOut, 0, 1000, 250);
+                        manager.start(Bounce.class, EasingManager.EaseType.EaseOut, 0, 100, 300);
                     else
-                        manager.start(Sine.class, EasingManager.EaseType.EaseIn, 1000, 0, 250);
+                        manager.start(Bounce.class, EasingManager.EaseType.EaseIn, 100, 0, 300);
                 }
 
                 return false;
