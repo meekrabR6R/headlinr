@@ -14,6 +14,7 @@ import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import org.redplatoon.headlinr.app.custom.ArticleWebView;
 
@@ -113,6 +114,13 @@ public class ArticleFragment extends Fragment {
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setContentView(R.layout.share);
 
+                TextView facebook = (TextView) dialog.findViewById(R.id.facebook);
+                facebook.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mListener.onFacebookShareInteraction(mUrl);
+                    }
+                });
                 dialog.show();
             }
         });
@@ -219,6 +227,7 @@ public class ArticleFragment extends Fragment {
      */
     public interface OnArticleFragmentInteractionListener {
         public void onArticleFragmentBackInteraction();
+        public void onFacebookShareInteraction(String url);
     }
 
 }

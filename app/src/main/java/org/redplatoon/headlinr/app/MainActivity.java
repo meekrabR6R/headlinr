@@ -3,6 +3,7 @@ package org.redplatoon.headlinr.app;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,6 +13,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.UiLifecycleHelper;
+import com.facebook.widget.FacebookDialog;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.gson.JsonArray;
@@ -31,7 +34,6 @@ import org.redplatoon.headlinr.app.models.Article;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
 public class MainActivity extends Activity implements ArticleFragment.OnArticleFragmentInteractionListener {
     private final ArrayList<Integer> mCategories = new ArrayList<Integer>();
     private String rootUrl;
@@ -43,7 +45,7 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
     private TextView mFeedZilla;
     private ProgressBar mProgressBar;
     private Article mArticle;
-
+    private UiLifecycleHelper mUiHelper;
     private static final String AD_UNIT_ID = "ca-app-pub-4547237027989566/2292472935";
 
     @Override
@@ -52,6 +54,9 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
         setContentView(R.layout.main);
         getActionBar().hide();
         Ion.getDefault(this).configure().setLogging("Headlinr", Log.DEBUG);
+
+        mUiHelper = new UiLifecycleHelper(this, null);
+        mUiHelper.onCreate(savedInstanceState);
 
         if(savedInstanceState != null) {
             mArticle = new Article();
@@ -88,11 +93,29 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        mUiHelper.onActivityResult(requestCode, resultCode, data, new FacebookDialog.Callback() {
+            @Override
+            public void onError(FacebookDialog.PendingCall pendingCall, Exception error, Bundle data) {
+                Log.e("Activity", String.format("Error: %s", error.toString()));
+            }
+
+            @Override
+            public void onComplete(FacebookDialog.PendingCall pendingCall, Bundle data) {
+                Log.i("Activity", "Success!");
+            }
+        });
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         if (mAdView != null) {
             mAdView.resume();
         }
+        mUiHelper.onResume();
     }
 
     @Override
@@ -100,6 +123,7 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
         if (mAdView != null) {
             mAdView.pause();
         }
+        mUiHelper.onPause();
         super.onPause();
     }
 
@@ -127,6 +151,7 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
         if (mAdView != null) {
             mAdView.destroy();
         }
+        mUiHelper.onDestroy();
         super.onDestroy();
     }
 
@@ -136,6 +161,14 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
         mButton.setVisibility(View.VISIBLE);
         mAdView.setVisibility(View.VISIBLE);
         mFeedZilla.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onFacebookShareInteraction(String url) {
+        FacebookDialog shareDialog = new FacebookDialog.ShareDialogBuilder(this)
+                .setLink(url)
+                .build();
+        mUiHelper.trackPendingDialogCall(shareDialog.present());
     }
 
     private void setUpCategories() {
