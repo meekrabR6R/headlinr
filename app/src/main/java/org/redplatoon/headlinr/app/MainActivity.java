@@ -103,6 +103,12 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        onArticleFragmentBackInteraction();
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         if (mArticle != null) {
 
