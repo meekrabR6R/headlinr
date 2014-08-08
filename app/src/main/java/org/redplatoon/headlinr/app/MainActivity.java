@@ -10,12 +10,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.FacebookException;
-import com.facebook.FacebookOperationCanceledException;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
@@ -289,11 +289,8 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
 
     private void publishFeedDialog(String url) {
         Bundle params = new Bundle();
-        params.putString("name", "Headlinr for Android");
-        //params.putString("caption", "Build great social apps and get more installs.");
-        //params.putString("description", "The Facebook SDK for Android makes it easier and faster to develop Facebook integrated Android apps.");
+        //params.putString("name", "Headlinr for Android");
         params.putString("link", url);
-        //params.putString("picture", "https://raw.github.com/fbsamples/ios-3.x-howtos/master/Images/iossdk_logo.png");
         if(Session.getActiveSession().isOpened()) {
             WebDialog feedDialog = (
                     new WebDialog.FeedDialogBuilder(this,
@@ -310,19 +307,9 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
                                 final String postId = values.getString("post_id");
                                 if (postId != null) {
                                     Toast.makeText(MainActivity.this,
-                                            "Posted story, id: " + postId,
-                                            Toast.LENGTH_SHORT).show();
-                                } else {
-                                    // User clicked the Cancel button
-                                    Toast.makeText(MainActivity.this.getApplicationContext(),
-                                            "Publish cancelled",
+                                            "Story posted!",
                                             Toast.LENGTH_SHORT).show();
                                 }
-                            } else if (error instanceof FacebookOperationCanceledException) {
-                                // User clicked the "x" button
-                                Toast.makeText(MainActivity.this.getApplicationContext(),
-                                        "Publish cancelled",
-                                        Toast.LENGTH_SHORT).show();
                             } else {
                                 // Generic, ex: network error
                                 Toast.makeText(MainActivity.this.getApplicationContext(),
@@ -337,7 +324,7 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
         } else {
             Log.d("Facebook", "Inactive");
             final Dialog dialog = new Dialog(this);
-            //dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setContentView(R.layout.fb_login);
             LoginButton authButton = (LoginButton) dialog.findViewById(R.id.fb_login_button);
             authButton.setOnClickListener(new View.OnClickListener() {
