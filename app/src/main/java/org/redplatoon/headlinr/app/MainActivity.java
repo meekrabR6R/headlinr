@@ -1,6 +1,7 @@
 package org.redplatoon.headlinr.app;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
@@ -13,8 +14,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.FacebookException;
+import com.facebook.FacebookOperationCanceledException;
+import com.facebook.Session;
+import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.widget.FacebookDialog;
+import com.facebook.widget.LoginButton;
+import com.facebook.widget.WebDialog;
+import com.facebook.widget.WebDialog.OnCompleteListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.gson.JsonArray;
@@ -34,6 +42,7 @@ import org.redplatoon.headlinr.app.models.Article;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
 public class MainActivity extends Activity implements ArticleFragment.OnArticleFragmentInteractionListener {
     private final ArrayList<Integer> mCategories = new ArrayList<Integer>();
     private String rootUrl;
@@ -46,7 +55,15 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
     private ProgressBar mProgressBar;
     private Article mArticle;
     private UiLifecycleHelper mUiHelper;
+    private LoginButton mHiddenButton;
     private static final String AD_UNIT_ID = "ca-app-pub-4547237027989566/2292472935";
+
+    private Session.StatusCallback mCallback = new Session.StatusCallback() {
+        @Override
+        public void call(Session session, SessionState state, Exception exception) {
+            onSessionStateChange(session, state, exception);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +72,9 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
         getActionBar().hide();
         Ion.getDefault(this).configure().setLogging("Headlinr", Log.DEBUG);
 
-        mUiHelper = new UiLifecycleHelper(this, null);
+        mUiHelper = new UiLifecycleHelper(this, mCallback);
         mUiHelper.onCreate(savedInstanceState);
+        mHiddenButton = (LoginButton) findViewById(R.id.hidden_fb_login_button);
 
         if(savedInstanceState != null) {
             mArticle = new Article();
@@ -144,6 +162,8 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
             outState.putString("source", mArticle.getSource());
             outState.putString("pubDate", mArticle.getPubDate());
         }
+
+        mUiHelper.onSaveInstanceState(outState);
     }
 
     @Override
@@ -165,10 +185,18 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
 
     @Override
     public void onFacebookShareInteraction(String url) {
-        FacebookDialog shareDialog = new FacebookDialog.ShareDialogBuilder(this)
-                .setLink(url)
-                .build();
-        mUiHelper.trackPendingDialogCall(shareDialog.present());
+        if (FacebookDialog.canPresentShareDialog(getApplicationContext(),
+                FacebookDialog.ShareDialogFeature.SHARE_DIALOG)) {
+            // Publish the post using the Share Dialog
+            FacebookDialog shareDialog = new FacebookDialog.ShareDialogBuilder(this)
+                    .setLink(url)
+                    .build();
+            mUiHelper.trackPendingDialogCall(shareDialog.present());
+
+        } else {
+            Log.d("Fallback", "Face");
+            publishFeedDialog(url);
+        }
     }
 
     private void setUpCategories() {
@@ -257,6 +285,77 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
 
     private int getRandomCategory() {
         return mCategories.get((new Random()).nextInt(mCategories.size()));
+    }
+
+    private void publishFeedDialog(String url) {
+        Bundle params = new Bundle();
+        params.putString("name", "Headlinr for Android");
+        //params.putString("caption", "Build great social apps and get more installs.");
+        //params.putString("description", "The Facebook SDK for Android makes it easier and faster to develop Facebook integrated Android apps.");
+        params.putString("link", url);
+        //params.putString("picture", "https://raw.github.com/fbsamples/ios-3.x-howtos/master/Images/iossdk_logo.png");
+        if(Session.getActiveSession().isOpened()) {
+            WebDialog feedDialog = (
+                    new WebDialog.FeedDialogBuilder(this,
+                            Session.getActiveSession(),
+                            params))
+                    .setOnCompleteListener(new OnCompleteListener() {
+
+                        @Override
+                        public void onComplete(Bundle values,
+                                               FacebookException error) {
+                            if (error == null) {
+                                // When the story is posted, echo the success
+                                // and the post Id.
+                                final String postId = values.getString("post_id");
+                                if (postId != null) {
+                                    Toast.makeText(MainActivity.this,
+                                            "Posted story, id: " + postId,
+                                            Toast.LENGTH_SHORT).show();
+                                } else {
+                                    // User clicked the Cancel button
+                                    Toast.makeText(MainActivity.this.getApplicationContext(),
+                                            "Publish cancelled",
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            } else if (error instanceof FacebookOperationCanceledException) {
+                                // User clicked the "x" button
+                                Toast.makeText(MainActivity.this.getApplicationContext(),
+                                        "Publish cancelled",
+                                        Toast.LENGTH_SHORT).show();
+                            } else {
+                                // Generic, ex: network error
+                                Toast.makeText(MainActivity.this.getApplicationContext(),
+                                        "Error posting story",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                    })
+                    .build();
+            feedDialog.show();
+        } else {
+            Log.d("Facebook", "Inactive");
+            final Dialog dialog = new Dialog(this);
+            //dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.fb_login);
+            LoginButton authButton = (LoginButton) dialog.findViewById(R.id.fb_login_button);
+            authButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mHiddenButton.performClick();
+                }
+            });
+            dialog.show();
+        }
+    }
+
+    private void onSessionStateChange(Session session, SessionState state, Exception exception) {
+        if (state.isOpened()) {
+            Log.i("Facebook", "Logged in...");
+        } else if (state.isClosed()) {
+            Log.i("Facebook", "Logged out...");
+        }
     }
 
     private class RSSFeedTask extends AsyncTask<String, String, Article> {
