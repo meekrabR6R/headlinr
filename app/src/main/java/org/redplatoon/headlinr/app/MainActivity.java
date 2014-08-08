@@ -263,8 +263,6 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
             @Override
             public void onClick(View v) {
                 try {
-                    //setContentView(R.layout.article);
-
                     ArticleFragment articleFragment = ArticleFragment.newInstance(url);
                     FragmentTransaction transaction = getFragmentManager().beginTransaction();
                     transaction.addToBackStack("article_fragment");
@@ -276,8 +274,6 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
                 } catch(Exception e) {
                     Log.d("URL", "Possibly malformed");
                     Toast.makeText(MainActivity.this, "The link appears to be broken. :(", Toast.LENGTH_LONG).show();
-                    //intent.setData(Uri.parse("http://" + intent.getData().toString()));
-                    //startActivity(intent);
                 }
             }
         });

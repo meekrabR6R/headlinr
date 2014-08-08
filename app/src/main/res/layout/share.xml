@@ -16,6 +16,7 @@
         android:textColor="@color/text"
         android:textSize="40sp"/>
     <TextView
+        android:id="@+id/twitter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
@@ -24,6 +25,7 @@
         android:textColor="@color/text"
         android:textSize="40sp"/>
     <TextView
+        android:id="@+id/email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
@@ -32,6 +34,7 @@
         android:textColor="@color/text"
         android:textSize="40sp"/>
     <TextView
+        android:id="@+id/sms"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"

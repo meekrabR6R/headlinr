@@ -3,6 +3,7 @@ package org.redplatoon.headlinr.app;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -114,11 +115,41 @@ public class ArticleFragment extends Fragment {
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setContentView(R.layout.share);
 
-                TextView facebook = (TextView) dialog.findViewById(R.id.facebook);
+                TextView facebook   = (TextView) dialog.findViewById(R.id.facebook);
+                TextView twitter    = (TextView) dialog.findViewById(R.id.twitter);
+                TextView email      = (TextView) dialog.findViewById(R.id.email);
+                TextView sms        = (TextView) dialog.findViewById(R.id.email);
+
                 facebook.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         mListener.onFacebookShareInteraction(mUrl);
+                    }
+                });
+
+                twitter.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                });
+
+                email.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                });
+
+                sms.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        final Intent emailIntent = new Intent(Intent.ACTION_SEND);
+
+                        emailIntent.setType("text/html");
+                        emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Headlinr on Android");
+                        emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, mUrl);
+                        getActivity().startActivity(Intent.createChooser(emailIntent, "Sending email . . ."));
                     }
                 });
                 dialog.show();
@@ -180,12 +211,6 @@ public class ArticleFragment extends Fragment {
                         @Override
                         public void onEasingStarted(double value) {
                             mIsListeningToScroll = false;
-                            //if (diff < -200) {
-                            //    mCustomActionBar.setTranslationY(-100.0f);
-                            //} else {
-                            //    mCustomActionBar.setTranslationY(0.0f);
-                            //}
-
                         }
 
                         @Override
@@ -202,9 +227,6 @@ public class ArticleFragment extends Fragment {
                         }
                     });
 
-                    // start the easing from 0 to 100
-                    // using Cubic easeOut
-                    // and a duration of 500ms
                     if (mIsCustomActionBarVisible)
                         manager.start(Bounce.class, EasingManager.EaseType.EaseOut, 0, 100, 300);
                     else
@@ -212,10 +234,6 @@ public class ArticleFragment extends Fragment {
                 }
 
                 return false;
-            }
-
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-
             }
 
            return false;
