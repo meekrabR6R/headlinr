@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.redplatoon.headlinr.app.custom.ArticleWebView;
+import org.redplatoon.headlinr.app.models.Article;
 
 import it.sephiroth.android.library.easing.Bounce;
 import it.sephiroth.android.library.easing.EasingManager;
@@ -35,7 +36,10 @@ import it.sephiroth.android.library.easing.EasingManager;
 public class ArticleFragment extends Fragment {
 
     private static final String URL = "url";
+    private static final String TITLE = "title";
+
     private String mUrl;
+    private String mTitle;
     private OnArticleFragmentInteractionListener mListener;
     private ImageView mBack;
     private ImageView mShare;
@@ -49,10 +53,11 @@ public class ArticleFragment extends Fragment {
      * this fragment using the provided parameters.
      * @return A new instance of fragment ArticleFragment.
      */
-    public static ArticleFragment newInstance(String url) {
+    public static ArticleFragment newInstance(Article article) {
         ArticleFragment fragment = new ArticleFragment();
         Bundle args = new Bundle();
-        args.putString(URL, url);
+        args.putString(TITLE,article.getTitle().toString());
+        args.putString(URL, article.getLink());
         fragment.setArguments(args);
         return fragment;
     }
@@ -65,6 +70,7 @@ public class ArticleFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mUrl = getArguments().getString(URL);
+            mTitle = getArguments().getString(TITLE);
         }
     }
 
@@ -145,10 +151,9 @@ public class ArticleFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         final Intent emailIntent = new Intent(Intent.ACTION_SEND);
-
                         emailIntent.setType("text/html");
-                        emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Headlinr on Android");
-                        emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, mUrl);
+                        emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, mTitle + " sent from Headlinr for Android");
+                        emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, mUrl +"\nSent from Headlinr for Android");
                         getActivity().startActivity(Intent.createChooser(emailIntent, "Sending email . . ."));
                     }
                 });

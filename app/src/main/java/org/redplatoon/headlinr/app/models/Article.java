@@ -22,6 +22,10 @@ public class Article {
         this.pubDate = "";
     }
 
+    public void setLink(String url) {
+        this.link = url;
+    }
+
     public void setIsInvalid(boolean isInvalid) {
         this.isInvalid = isInvalid;
     }

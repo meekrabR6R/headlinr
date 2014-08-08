@@ -94,7 +94,9 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
         mFeedZilla = (TextView) findViewById(R.id.feedzilla);
         //Intent intent = new Intent(Intent.ACTION_VIEW);
         //intent.setData(Uri.parse(getString(R.string.feedzilla_url)));
-        setClick(mFeedZilla, getString(R.string.feedzilla_url));
+        Article feedZilla = new Article();
+        feedZilla.setLink(getString(R.string.feedzilla_url));
+        setClick(mFeedZilla, feedZilla);
 
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mButton = (TextView) findViewById(R.id.button);
@@ -258,12 +260,12 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
             });
     }
 
-    private void setClick(View view, final String url) {
+    private void setClick(View view, final Article article) {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
-                    ArticleFragment articleFragment = ArticleFragment.newInstance(url);
+                    ArticleFragment articleFragment = ArticleFragment.newInstance(article);
                     FragmentTransaction transaction = getFragmentManager().beginTransaction();
                     transaction.addToBackStack("article_fragment");
                     transaction.replace(R.id.main_view, articleFragment);
@@ -398,10 +400,10 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
 
                 //final Intent intent = new Intent(Intent.ACTION_VIEW);
                 //intent.setData(Uri.parse(article.getLink()));
-                String url = article.getLink();
-                setClick(mHeadLine, url);
-                setClick(mSummary, url);
-                setClick(mMetaData, url);
+                //String url = article.getLink();
+                setClick(mHeadLine, article);
+                setClick(mSummary, article);
+                setClick(mMetaData, article);
 
                 mButton.setClickable(true);
             }
