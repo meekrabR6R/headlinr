@@ -4,7 +4,10 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Telephony;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -124,7 +127,7 @@ public class ArticleFragment extends Fragment {
                 TextView facebook   = (TextView) dialog.findViewById(R.id.facebook);
                 TextView twitter    = (TextView) dialog.findViewById(R.id.twitter);
                 TextView email      = (TextView) dialog.findViewById(R.id.email);
-                TextView sms        = (TextView) dialog.findViewById(R.id.email);
+                TextView sms        = (TextView) dialog.findViewById(R.id.sms);
 
                 facebook.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -143,18 +146,14 @@ public class ArticleFragment extends Fragment {
                 email.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
+                        sendEmail();
                     }
                 });
 
                 sms.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        final Intent emailIntent = new Intent(Intent.ACTION_SEND);
-                        emailIntent.setType("text/html");
-                        emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, mTitle + " sent from Headlinr for Android");
-                        emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, mUrl +"\nSent from Headlinr for Android");
-                        getActivity().startActivity(Intent.createChooser(emailIntent, "Sending email . . ."));
+                        sendSMS();
                     }
                 });
                 dialog.show();
@@ -184,6 +183,38 @@ public class ArticleFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    private void sendEmail() {
+        final Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        emailIntent.setType("text/html");
+        emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, mTitle + " sent from Headlinr for Android");
+        emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, mUrl +"\nSent from Headlinr for Android");
+        getActivity().startActivity(Intent.createChooser(emailIntent, "Sending email . . ."));
+    }
+
+    private void sendSMS() {
+        Activity activity = getActivity();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            String defaultSmsPackageName = Telephony.Sms.getDefaultSmsPackage(activity); //Need to change the build to API 19
+
+            Intent sendIntent = new Intent(Intent.ACTION_SEND);
+            sendIntent.setType("text/plain");
+            sendIntent.putExtra(Intent.EXTRA_TEXT, mUrl + "\nSent from Headlinr for Android");
+            //Can be null in case that there is no default, then the user would be able to choose any app that support this intent.
+            if (defaultSmsPackageName != null) {
+                sendIntent.setPackage(defaultSmsPackageName);
+            }
+            activity.startActivity(sendIntent);
+
+        }
+        //For early versions, do what worked for you before.
+        else {
+            Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+            sendIntent.setData(Uri.parse("sms:"));
+            sendIntent.putExtra("sms_body", mUrl + "\nSent from Headlinr for Android");
+            activity.startActivity(sendIntent);
+        }
     }
 
     /**
