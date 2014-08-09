@@ -206,9 +206,11 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
     }
 
     @Override
-    public void onTwitterShareInteraction(String url) {
-        String message = "From @HeadlinrAndroid";
-        String twitterUrl = "http://www.twitter.com/intent/tweet?url="+url+"&hashtags=Android,Headlinr&text="+message;
+    public void onTwitterShareInteraction(String title, String url) {
+        String message = title + " from @HeadlinrAndroid";
+
+
+        String twitterUrl = "http://www.twitter.com/intent/tweet?url="+url+"&text="+message;
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(twitterUrl));
         startActivity(i);

@@ -12,6 +12,7 @@
     <color name="text">#FFFFFF</color>
     <color name="summary">#0099FF</color>
     <color name="metadata">#9999FF</color>
+    <color name="action_clicked">#D3D3D3</color>
     <color name="clicked">#FFFF66</color>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
