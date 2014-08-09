@@ -139,7 +139,7 @@ public class ArticleFragment extends Fragment {
                 twitter.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
+                        mListener.onTwitterShareInteraction(mUrl);
                     }
                 });
 
@@ -283,6 +283,7 @@ public class ArticleFragment extends Fragment {
     public interface OnArticleFragmentInteractionListener {
         public void onArticleFragmentBackInteraction();
         public void onFacebookShareInteraction(String url);
+        public void onTwitterShareInteraction(String url);
     }
 
 }

@@ -23,6 +23,10 @@ dependencies {
     compile 'com.android.support:support-v4:20.0.0'
     compile 'com.google.android.gms:play-services:5.0.77'
     compile 'com.koushikdutta.ion:ion:+'
+    compile 'org.twitter4j:twitter4j-core:+'
+    compile('com.wu-man:android-oauth-client:0.0.3') {
+        exclude module: 'support-v4'
+    }
     compile 'it.sephiroth.android.library.easing:android-easing:+'
     compile project(':app:libs:facebook:facebook')
     androidTestCompile files('libs/espresso-contrib-1.1-bundled.jar')

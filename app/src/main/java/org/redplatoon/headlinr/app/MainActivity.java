@@ -6,6 +6,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -56,7 +57,10 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
     private Article mArticle;
     private UiLifecycleHelper mUiHelper;
     private LoginButton mHiddenButton;
-    private static final String AD_UNIT_ID = "ca-app-pub-4547237027989566/2292472935";
+    private String mTwitterAccessToken;
+    private String mTwitterApiKey;
+    private String mTwitterSecret;
+    private static final String AD_UNIT_ID = "ca-app-pub-4547237027989566/2292472935"; //should move
 
     private Session.StatusCallback mCallback = new Session.StatusCallback() {
         @Override
@@ -76,6 +80,8 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
         mUiHelper.onCreate(savedInstanceState);
         mHiddenButton = (LoginButton) findViewById(R.id.hidden_fb_login_button);
 
+        mTwitterApiKey = getString(R.string.twitter_api_key);
+        mTwitterSecret = getString(R.string.twitter_app_secret);
         if(savedInstanceState != null) {
             mArticle = new Article();
 
@@ -92,8 +98,6 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
         rootUrl = getString(R.string.root_url);
 
         mFeedZilla = (TextView) findViewById(R.id.feedzilla);
-        //Intent intent = new Intent(Intent.ACTION_VIEW);
-        //intent.setData(Uri.parse(getString(R.string.feedzilla_url)));
         Article feedZilla = new Article();
         feedZilla.setLink(getString(R.string.feedzilla_url));
         setClick(mFeedZilla, feedZilla);
@@ -199,6 +203,15 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
             Log.d("Fallback", "Face");
             publishFeedDialog(url);
         }
+    }
+
+    @Override
+    public void onTwitterShareInteraction(String url) {
+        String message = "From @HeadlinrAndroid";
+        String twitterUrl = "http://www.twitter.com/intent/tweet?url="+url+"&hashtags=Android,Headlinr&text="+message;
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(twitterUrl));
+        startActivity(i);
     }
 
     private void setUpCategories() {
