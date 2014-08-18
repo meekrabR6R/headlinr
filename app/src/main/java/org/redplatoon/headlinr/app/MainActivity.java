@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -57,6 +58,7 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
     private Article mArticle;
     private UiLifecycleHelper mUiHelper;
     private LoginButton mHiddenButton;
+    private ImageView mMore;
     private String mTwitterAccessToken;
     private String mTwitterApiKey;
     private String mTwitterSecret;
@@ -82,6 +84,7 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
 
         mTwitterApiKey = getString(R.string.twitter_api_key);
         mTwitterSecret = getString(R.string.twitter_app_secret);
+
         if(savedInstanceState != null) {
             mArticle = new Article();
 
@@ -95,6 +98,13 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
             mArticle.setProperties(source, title, link, description, pubDate);
         }
 
+        mMore = (ImageView) findViewById(R.id.more);
+        mMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("click", "uyup");
+            }
+        });
         rootUrl = getString(R.string.root_url);
 
         mFeedZilla = (TextView) findViewById(R.id.feedzilla);

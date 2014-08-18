@@ -15,7 +15,48 @@ android {
             runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
+
+        debug {
+            packageNameSuffix ".debug"
+        }
     }
+
+    productFlavors {
+        pro {
+            packageName "org.redplatoon.headlinr.app.pro"
+        }
+
+        free {
+            packageName "org.redplatoon.headlinr.app.free"
+        }
+    }
+
+    android.sourceSets.pro {
+        manifest.srcFile 'versions/pro/AndroidManifest.xml'
+        res { srcDir 'versions/pro/res' }
+        resources { srcDir 'versions/pro/res' }
+    }
+
+    android.sourceSets.free {
+        manifest.srcFile 'versions/free/AndroidManifest.xml'
+        res { srcDir 'versions/free/res' }
+        resources { srcDir 'versions/free/res' }
+    }
+
+    android.sourceSets.release {
+        res { srcDirs 'variations/release' }
+    }
+
+    android.sourceSets.debug {
+        res { srcDirs 'variations/debug' }
+    }
+
+    sourceSets {
+        instrumentTest {
+            java.srcDirs = ['androidTest/java']
+        }
+    }
+
 }
 
 dependencies {
