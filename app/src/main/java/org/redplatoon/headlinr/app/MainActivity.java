@@ -350,8 +350,9 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
                     ArticleFragment articleFragment = ArticleFragment.newInstance(article);
                     FragmentTransaction transaction = getFragmentManager().beginTransaction();
                     transaction.addToBackStack("article_fragment");
-                    transaction.replace(R.id.main_view, articleFragment);
-                    transaction.commit();
+                    transaction.setCustomAnimations(R.animator.slide_in,R.animator.slide_out)
+                               .replace(R.id.main_view, articleFragment)
+                               .commit();
                     mButton.setVisibility(View.GONE);
                     mAdView.setVisibility(View.GONE);
                     mFeedZilla.setVisibility(View.GONE);

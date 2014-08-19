@@ -33,6 +33,7 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
     private TextView mRateMe;
     private SharedPreferences mSettings;
     private Drawable mOriginalBg;
+    private int mFilteredViewId;
 
     /**
      * Use this factory method to create a new instance of
@@ -79,10 +80,11 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
                 onButtonPressed();
             }
         });
-        int filteredViewId = mSettings.getInt("filter_view",0);
-        if(filteredViewId != 0) {
-            TextView filteredView = (TextView) rootView.findViewById(filteredViewId);
+        String filteredViewName = mSettings.getString("filter_view",null);
+        if(filteredViewName != null) {
+            TextView filteredView = getFilteredView(rootView, filteredViewName);
             mOriginalBg = filteredView.getBackground();
+            mFilteredViewId = filteredView.getId();
             filteredView.setBackgroundColor(getActivity().getResources().getColor(R.color.clicked));
         }
 
@@ -134,40 +136,51 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        int filteredView = mSettings.getInt("filter_view",0);
-        if(filteredView == 0) {
+        //String filteredView = mSettings.getString("filter_view","");
+        if(mFilteredViewId == 0) {
+            SharedPreferences.Editor editor = mSettings.edit();
             ArrayList<Integer> filters = new ArrayList<Integer>();
             switch (v.getId()) {
                 case R.id.us_news:
                     filters.add(7);
+                    editor.putString("filter_view", "us_news");
                     break;
                 case R.id.world_news:
                     filters.add(19);
+                    editor.putString("filter_view", "world_news");
                     break;
                 case R.id.top_news:
                     filters.add(26);
+                    editor.putString("filter_view", "top_news");
                     break;
                 case R.id.columnists:
                     filters.add(588);
+                    editor.putString("filter_view", "columnists");
                     break;
                 case R.id.offbeat:
                     filters.add(36);
+                    editor.putString("filter_view", "offbeat");
                     break;
                 case R.id.general_news:
                     filters.add(1168);
+                    editor.putString("filter_view", "general_news");
                     break;
                 case R.id.sports:
                     filters.add(1314);
                     filters.add(27);
+                    editor.putString("filter_view", "sports");
                     break;
                 case R.id.travel:
                     filters.add(23);
+                    editor.putString("filter_view", "travel");
                     break;
                 case R.id.hobbies:
                     filters.add(14);
+                    editor.putString("filter_view", "hobbies");
                     break;
                 case R.id.music:
                     filters.add(29);
+                    editor.putString("filter_view", "music");
                     break;
                 case R.id.sci_tech:
                     filters.add(30);
@@ -176,10 +189,12 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
                     filters.add(15);
                     filters.add(28);
                     filters.add(10);
+                    editor.putString("filter_view", "sci_tech");
                     break;
                 case R.id.blogs:
                     filters.add(21);
                     filters.add(31);
+                    editor.putString("filter_view", "blogs");
                     break;
                 case R.id.lifestyle:
                     filters.add(5);
@@ -189,33 +204,38 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
                     filters.add(20);
                     filters.add(34);
                     filters.add(4);
+                    editor.putString("filter_view", "lifestyle");
                     break;
                 case R.id.art:
                     filters.add(13);
+                    editor.putString("filter_view", "art");
                     break;
                 case R.id.health:
                     filters.add(11);
+                    editor.putString("filter_view", "health");
                     break;
                 case R.id.business:
                     filters.add(2);
                     filters.add(22);
+                    editor.putString("filter_view", "business");
                     break;
                 case R.id.politics:
                     filters.add(591);
                     filters.add(3);
+                    editor.putString("filter_view", "politics");
                     break;
                 case R.id.videogames:
                     filters.add(9);
+                    editor.putString("filter_view", "videogames");
                     break;
                 case R.id.uni_news:
                     filters.add(12);
+                    editor.putString("filter_view", "uni_news");
                     break;
                 default:
                     break;
             }
-
-            SharedPreferences.Editor editor = mSettings.edit();
-            editor.putInt("filter_view", v.getId());
+            mFilteredViewId = v.getId();
             editor.commit();
 
             mOriginalBg = v.getBackground();
@@ -223,12 +243,13 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
             if (mListener != null) {
                 mListener.onMoreFragmentFilterSelection(filters);
             }
-        } else if(v.getId() == filteredView) {
+        } else if(v.getId() == mFilteredViewId) {
             if(mOriginalBg != null)
                 v.setBackgroundDrawable(mOriginalBg);
             SharedPreferences.Editor editor = mSettings.edit();
             editor.remove("filter_view");
             editor.commit();
+            mFilteredViewId = 0;
             if (mListener != null) {
                 mListener.onMoreFragmentFilterSelection(new ArrayList<Integer>());
             }
@@ -237,6 +258,47 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    private TextView getFilteredView(View vg, String filteredViewName) {
+                if(filteredViewName.equals("us_news"))
+                    return (TextView) vg.findViewById(R.id.us_news);
+                else if(filteredViewName.equals("world_news"))
+                    return (TextView) vg.findViewById(R.id.world_news);
+                else if(filteredViewName.equals("top_news"))
+                    return (TextView) vg.findViewById(R.id.top_news);
+                else if(filteredViewName.equals("columnists"))
+                    return (TextView) vg.findViewById(R.id.columnists);
+                else if(filteredViewName.equals("offbeat"))
+                    return (TextView) vg.findViewById(R.id.offbeat);
+                else if(filteredViewName.equals("general_news"))
+                    return (TextView) vg.findViewById(R.id.general_news);
+                else if(filteredViewName.equals("sports"))
+                    return (TextView) vg.findViewById(R.id.sports);
+                else if(filteredViewName.equals("travel"))
+                    return (TextView) vg.findViewById(R.id.travel);
+                else if(filteredViewName.equals("hobbies"))
+                    return (TextView) vg.findViewById(R.id.hobbies);
+                else if(filteredViewName.equals("music"))
+                    return (TextView) vg.findViewById(R.id.music);
+                else if(filteredViewName.equals("sci_tech"))
+                    return (TextView) vg.findViewById(R.id.sci_tech);
+                else if(filteredViewName.equals("blogs"))
+                    return (TextView) vg.findViewById(R.id.blogs);
+                else if(filteredViewName.equals("lifestyle"))
+                    return (TextView) vg.findViewById(R.id.lifestyle);
+                else if(filteredViewName.equals("art"))
+                    return (TextView) vg.findViewById(R.id.art);
+                else if(filteredViewName.equals("health"))
+                    return (TextView) vg.findViewById(R.id.health);
+                else if(filteredViewName.equals("business"))
+                    return (TextView) vg.findViewById(R.id.business);
+                else if(filteredViewName.equals("politics"))
+                    return (TextView) vg.findViewById(R.id.politics);
+                else if(filteredViewName.equals("videogames"))
+                    return (TextView) vg.findViewById(R.id.videogames);
+                else
+                    return (TextView) vg.findViewById(R.id.uni_news);
+
+    }
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
