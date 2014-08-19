@@ -277,6 +277,10 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
 
     private void setUpCategories() {
         mProgressBar.setVisibility(View.VISIBLE);
+        mHeadLine.setVisibility(View.GONE);
+        mSummary.setVisibility(View.GONE);
+        mMetaData.setVisibility(View.GONE);
+
         Set<String> filterSet = mSettings.getStringSet("filters", null);
         if(filterSet != null) {
             for (String filter : filterSet)
@@ -312,9 +316,10 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
             @Override
             public void onClick(View v) {
                 mButton.setClickable(false);
-                if(mShouldSetUpCategories)
+                if(mShouldSetUpCategories) {
                     setUpCategories();
-                else
+                    mShouldSetUpCategories = false;
+                } else
                     loadRandomArticle();
             }
         });

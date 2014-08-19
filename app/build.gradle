@@ -7,8 +7,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 20
-        versionCode 7
-        versionName "1.1.1"
+        versionCode 8
+        versionName "1.2.0"
     }
     buildTypes {
         release {
@@ -21,35 +21,35 @@ android {
         }
     }
 
-    productFlavors {
-        pro {
-            packageName "org.redplatoon.headlinr.app.pro"
-        }
+   // productFlavors {
+       // pro {
+     //       packageName "org.redplatoon.headlinr.app.pro"
+       // }
 
-        free {
-            packageName "org.redplatoon.headlinr.app.free"
-        }
-    }
+//        free {
+  //          packageName "org.redplatoon.headlinr.app.free"
+    //    }
+  //  }
 
-    android.sourceSets.pro {
-        manifest.srcFile 'versions/pro/AndroidManifest.xml'
-        res { srcDir 'versions/pro/res' }
-        resources { srcDir 'versions/pro/res' }
-    }
+  //  android.sourceSets.pro {
+   //     manifest.srcFile 'versions/pro/AndroidManifest.xml'
+    //    res { srcDir 'versions/pro/res' }
+     //   resources { srcDir 'versions/pro/res' }
+   // }
 
-    android.sourceSets.free {
-        manifest.srcFile 'versions/free/AndroidManifest.xml'
-        res { srcDir 'versions/free/res' }
-        resources { srcDir 'versions/free/res' }
-    }
+//    android.sourceSets.free {
+  //      manifest.srcFile 'versions/free/AndroidManifest.xml'
+    //    res { srcDir 'versions/free/res' }
+      //  resources { srcDir 'versions/free/res' }
+   // }
 
-    android.sourceSets.release {
-        res { srcDirs 'variations/release' }
-    }
+   // android.sourceSets.release {
+     //   res { srcDirs 'variations/release' }
+   // }
 
-    android.sourceSets.debug {
-        res { srcDirs 'variations/debug' }
-    }
+   // android.sourceSets.debug {
+     //   res { srcDirs 'variations/debug' }
+   // }
 
     sourceSets {
         instrumentTest {
