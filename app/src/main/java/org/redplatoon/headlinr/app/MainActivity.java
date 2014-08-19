@@ -5,10 +5,12 @@ import android.app.Dialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -42,12 +44,15 @@ import org.mcsoxford.rss.RSSReaderException;
 import org.redplatoon.headlinr.app.models.Article;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 public class MainActivity extends Activity implements ArticleFragment.OnArticleFragmentInteractionListener,
                                                       MoreFragment.OnMoreFragmentInteractionListener {
     private final ArrayList<Integer> mCategories = new ArrayList<Integer>();
+    private SharedPreferences mSettings;
     private String rootUrl;
     private TextView mButton;
     private TextView mHeadLine;
@@ -78,6 +83,8 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
         setContentView(R.layout.main);
         getActionBar().hide();
         Ion.getDefault(this).configure().setLogging("Headlinr", Log.DEBUG);
+
+        mSettings = PreferenceManager.getDefaultSharedPreferences(this);
 
         mUiHelper = new UiLifecycleHelper(this, mCallback);
         mUiHelper.onCreate(savedInstanceState);
@@ -226,8 +233,22 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
 
     @Override
     public void onMoreFragmentFilterSelection(ArrayList<Integer> filters) {
-        mCategories.clear();
-        mCategories.addAll(filters);
+        SharedPreferences.Editor editor = mSettings.edit();
+        if(filters.size() > 0) {
+            mCategories.clear();
+            mCategories.addAll(filters);
+
+            Set<String> filterStrings = new HashSet<String>();
+            for (Integer filter : filters)
+                filterStrings.add(String.valueOf(filter));
+
+            editor.putStringSet("filters", filterStrings);
+            editor.commit();
+        } else {
+            editor.remove("filters");
+            editor.commit();
+            setUpCategories();
+        }
     }
 
     @Override
@@ -251,31 +272,44 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
 
     private void setUpCategories() {
         mProgressBar.setVisibility(View.VISIBLE);
-        Ion.with(this)
-           .load(rootUrl + "categories.json")
-           .asJsonArray()
-           .setCallback(new FutureCallback<JsonArray>() {
-               @Override
-               public void onCompleted(Exception e, JsonArray result) {
-                   if(e != null) {
-                       return;
-                   }
-                   for(JsonElement entry : result) {
-                        int categoryId = entry.getAsJsonObject().get("category_id").getAsInt();
-                        if(categoryId != 18)
-                            mCategories.add(entry.getAsJsonObject().get("category_id").getAsInt());
-                   }
+        Set<String> filterSet = mSettings.getStringSet("filters", null);
+        if(filterSet != null) {
+            for (String filter : filterSet)
+                mCategories.add(Integer.parseInt(filter));
 
-                   loadRandomArticle();
-                   mButton.setOnClickListener(new View.OnClickListener() {
-                       @Override
-                       public void onClick(View v) {
-                           mButton.setClickable(false);
-                           loadRandomArticle();
-                       }
-                   });
-               }
-           });
+            setUpButton();
+
+        } else {
+            Ion.with(this)
+                    .load(rootUrl + "categories.json")
+                    .asJsonArray()
+                    .setCallback(new FutureCallback<JsonArray>() {
+                        @Override
+                        public void onCompleted(Exception e, JsonArray result) {
+                            if (e != null) {
+                                return;
+                            }
+                            for (JsonElement entry : result) {
+                                int categoryId = entry.getAsJsonObject().get("category_id").getAsInt();
+                                if (categoryId != 18)
+                                    mCategories.add(entry.getAsJsonObject().get("category_id").getAsInt());
+                            }
+                            setUpButton();
+                        }
+                    });
+        }
+    }
+
+    //Ugly little bitch..
+    private void setUpButton() {
+        loadRandomArticle();
+        mButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mButton.setClickable(false);
+                loadRandomArticle();
+            }
+        });
     }
 
     private void loadRandomArticle() {
