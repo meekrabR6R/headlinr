@@ -21,6 +21,15 @@
                 android:textColor="@color/text"
                 android:textSize="40sp"/>
             <TextView
+                android:id="@+id/note"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Note from the developer:\nThis app is very much a work in progress. Stick with it and watch it grow! :)"
+                android:background="@color/background"
+                android:textColor="@color/text"
+                android:textSize="13sp"/>
+            <TextView
                 android:id="@+id/filter_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -34,6 +43,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                android:padding="10dp"
                 android:text="us news"
                 android:background="@drawable/summary"
                 android:textColor="@color/text"
@@ -221,8 +231,8 @@
         </LinearLayout>
         <ImageView
             android:id="@+id/more"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:src="@drawable/ic_action_back"
             android:rotation="90"
             android:background="@drawable/more"

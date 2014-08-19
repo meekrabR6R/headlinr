@@ -68,6 +68,8 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
     private String mTwitterAccessToken;
     private String mTwitterApiKey;
     private String mTwitterSecret;
+    private boolean mShouldSetUpCategories = false;
+
     private static final String AD_UNIT_ID = "ca-app-pub-4547237027989566/2292472935"; //should move
 
     private Session.StatusCallback mCallback = new Session.StatusCallback() {
@@ -244,19 +246,22 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
 
             editor.putStringSet("filters", filterStrings);
             editor.commit();
+            //setUpCategories();
         } else {
             editor.remove("filters");
             editor.commit();
-            setUpCategories();
+            //setUpCategories();
         }
     }
 
     @Override
-    public void onMoreFragmentBackInteraction() {
+    public void onMoreFragmentBackInteraction(boolean shouldSetUpCategories) {
         getFragmentManager().popBackStack("more_fragment", FragmentManager.POP_BACK_STACK_INCLUSIVE);
         mButton.setVisibility(View.VISIBLE);
         mAdView.setVisibility(View.VISIBLE);
         mFeedZilla.setVisibility(View.VISIBLE);
+
+        mShouldSetUpCategories = shouldSetUpCategories;
     }
 
     @Override
@@ -307,7 +312,10 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
             @Override
             public void onClick(View v) {
                 mButton.setClickable(false);
-                loadRandomArticle();
+                if(mShouldSetUpCategories)
+                    setUpCategories();
+                else
+                    loadRandomArticle();
             }
         });
     }
@@ -317,6 +325,7 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
         mSummary.setVisibility(View.GONE);
         mMetaData.setVisibility(View.GONE);
         mProgressBar.setVisibility(View.VISIBLE);
+        mMore.setClickable(false);
         Ion.with(this)
             .load(rootUrl + "categories/" + getRandomCategory() + "/articles.json")
             .asJsonObject()
@@ -472,6 +481,7 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
             if(article.isInvalid()) {
                 loadRandomArticle();
             } else {
+
                 mProgressBar.setVisibility(View.GONE);
                 mHeadLine.setVisibility(View.VISIBLE);
                 mSummary.setVisibility(View.VISIBLE);
@@ -489,6 +499,8 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
                 setClick(mMetaData, article);
 
                 mButton.setClickable(true);
+                mMore.setClickable(true);
+
             }
         }
     }

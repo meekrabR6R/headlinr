@@ -23,7 +23,7 @@ import android.widget.TextView;
 import org.redplatoon.headlinr.app.custom.ArticleWebView;
 import org.redplatoon.headlinr.app.models.Article;
 
-import it.sephiroth.android.library.easing.Bounce;
+import it.sephiroth.android.library.easing.Cubic;
 import it.sephiroth.android.library.easing.EasingManager;
 
 
@@ -252,7 +252,7 @@ public class ArticleFragment extends Fragment {
                         @Override
                         public void onEasingFinished(double value) {
                             if (diff < -200) {
-                                mCustomActionBar.setTranslationY(-100.0f);
+                                mCustomActionBar.setTranslationY(-140.0f);
                                 mIsCustomActionBarVisible = false;
                             } else {
                                 mCustomActionBar.setTranslationY(0.0f);
@@ -264,9 +264,9 @@ public class ArticleFragment extends Fragment {
                     });
 
                     if (mIsCustomActionBarVisible)
-                        manager.start(Bounce.class, EasingManager.EaseType.EaseOut, 0, 100, 300);
+                        manager.start(Cubic.class, EasingManager.EaseType.EaseOut, 0, 100, 200);
                     else
-                        manager.start(Bounce.class, EasingManager.EaseType.EaseIn, 100, 0, 300);
+                        manager.start(Cubic.class, EasingManager.EaseType.EaseIn, 100, 0, 200);
                 }
 
                 return false;

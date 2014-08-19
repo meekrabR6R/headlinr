@@ -34,7 +34,7 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
     private SharedPreferences mSettings;
     private Drawable mOriginalBg;
     private int mFilteredViewId;
-
+    private boolean mShouldSetUpCategories = false;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -113,7 +113,7 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
 
     public void onButtonPressed() {
         if (mListener != null) {
-            mListener.onMoreFragmentBackInteraction();
+            mListener.onMoreFragmentBackInteraction(mShouldSetUpCategories);
         }
     }
 
@@ -253,6 +253,7 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
             if (mListener != null) {
                 mListener.onMoreFragmentFilterSelection(new ArrayList<Integer>());
             }
+            mShouldSetUpCategories = true;
         } else {
             Toast.makeText(getActivity(), "Only one filter can be active.. :-/", Toast.LENGTH_LONG).show();
         }
@@ -311,7 +312,7 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
      */
     public interface OnMoreFragmentInteractionListener {
         public void onMoreFragmentFilterSelection(ArrayList<Integer> filters);
-        public void onMoreFragmentBackInteraction();
+        public void onMoreFragmentBackInteraction(boolean shouldSetUpCategories);
     }
 
 }
