@@ -225,8 +225,9 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
     }
 
     @Override
-    public void onMoreFragmentInteraction() {
-        //TODO: shiz
+    public void onMoreFragmentFilterSelection(ArrayList<Integer> filters) {
+        mCategories.clear();
+        mCategories.addAll(filters);
     }
 
     @Override
