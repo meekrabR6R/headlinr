@@ -183,6 +183,7 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
     public void onBackPressed() {
         super.onBackPressed();
         onArticleFragmentBackInteraction();
+        onMoreFragmentBackInteraction(true);
     }
 
     @Override
