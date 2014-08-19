@@ -45,7 +45,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class MainActivity extends Activity implements ArticleFragment.OnArticleFragmentInteractionListener {
+public class MainActivity extends Activity implements ArticleFragment.OnArticleFragmentInteractionListener,
+                                                      MoreFragment.OnMoreFragmentInteractionListener {
     private final ArrayList<Integer> mCategories = new ArrayList<Integer>();
     private String rootUrl;
     private TextView mButton;
@@ -102,9 +103,17 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
         mMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("click", "uyup");
+                MoreFragment moreFragment = MoreFragment.newInstance();
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                transaction.addToBackStack("more_fragment");
+                transaction.replace(R.id.main_view, moreFragment);
+                transaction.commit();
+                mButton.setVisibility(View.GONE);
+                mAdView.setVisibility(View.GONE);
+                mFeedZilla.setVisibility(View.GONE);
             }
         });
+
         rootUrl = getString(R.string.root_url);
 
         mFeedZilla = (TextView) findViewById(R.id.feedzilla);
@@ -213,6 +222,19 @@ public class MainActivity extends Activity implements ArticleFragment.OnArticleF
             Log.d("Fallback", "Face");
             publishFeedDialog(url);
         }
+    }
+
+    @Override
+    public void onMoreFragmentInteraction() {
+        //TODO: shiz
+    }
+
+    @Override
+    public void onMoreFragmentBackInteraction() {
+        getFragmentManager().popBackStack("more_fragment", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        mButton.setVisibility(View.VISIBLE);
+        mAdView.setVisibility(View.VISIBLE);
+        mFeedZilla.setVisibility(View.VISIBLE);
     }
 
     @Override

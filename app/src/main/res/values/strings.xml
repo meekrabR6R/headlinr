@@ -7,6 +7,7 @@
     <string name="root_url">http://api.feedzilla.com/v1/</string>
     <string name="feedzilla_url">http://www.feedzilla.com</string>
     <color name="background">#006699</color>
+    <color name="rate_button">#FF9900</color>
     <color name="button">#FF6666</color>
     <color name="headline">#00CC99</color>
     <color name="text">#FFFFFF</color>
